@@ -5,9 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog App</title>
     <link rel="stylesheet" href="style.css">
+      <script src="client.js" defer></script>
 </head>
 <body>
-    <h1>Blog App Setup</h1>
-    <script src="client.js"></script>
+    <header>
+        <nav>
+            <button id="btn-home">Home</button> </nav>
+    </header>
+
+    <main>
+        <section id="view-home">
+            <h1>Seneste Blogindlæg</h1>
+            <div id="blog-list">
+                <article class="blog-preview">
+                    <h2>Velkommen til min første post</h2>
+                    <p>Dette er en intro tekst...</p>
+                    <button class="read-more-btn" data-id="1">Læs mere</button>
+                </article>
+            </div>
+        </section>
+
+        <section id="view-post" style="display: none;">
+            <button id="back-btn">← Tilbage</button>
+            <article id="full-post-content">
+                <h2>Titel kommer her</h2>
+                <p>Indhold kommer her...</p>
+            </article>
+
+            <hr>
+
+            <section id="comment-section">
+                <h3>Kommentarer</h3>
+                <div id="comments-list">
+                    </div>
+
+                <form id="comment-form">
+                    <h4>Skriv en kommentar</h4>
+                    <input type="text" id="comment-author" placeholder="Dit navn" required>
+                    <textarea id="comment-text" placeholder="Din kommentar (URLer vil blive tjekket!)" required></textarea>
+                    <button type="submit">Publicer</button>
+                </form>
+                <p id="feedback-message"></p> </section>
+        </section>
+    </main>
 </body>
 </html>
+
