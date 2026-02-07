@@ -4,10 +4,13 @@
 const viewHome = document.getElementById('view-home');
 const viewPost = document.getElementById('view-post');
 
+// Containers
+const blogList = document.getElementById('blog-list');
+const fullPostContent = document.getElementById('full-post-content');
+
 // Buttons
 const btnHome = document.getElementById('btn-home');
 const btnBack = document.getElementById('back-btn');
-const btnReadMore = document.querySelector('.read-more-btn');
 
 // --- Feedback Helper ---
 const FEEDBACK_CLASSES = ['feedback-loading', 'feedback-success', 'feedback-warning', 'feedback-error'];
@@ -42,11 +45,54 @@ btnHome.addEventListener('click', () => {
 btnBack.addEventListener('click', () => {
     goHome();
 });
-if (btnReadMore) {
-    btnReadMore.addEventListener('click', () => {
-        goToPost();
-    });
+
+// --- Load Latest Blog Post ---
+async function loadLatestPost() {
+    try {
+        const response = await fetch('/api/posts/latest');
+        if (!response.ok) return;
+
+        const post = await response.json();
+        const date = new Date(post.date).toLocaleDateString('da-DK', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        // Extract first <p> text as excerpt
+        const excerptMatch = post.content.match(/<p>(.*?)<\/p>/);
+        const excerpt = excerptMatch
+            ? excerptMatch[1].replace(/<[^>]*>/g, '').slice(0, 120) + '...'
+            : '';
+
+        // Render blog card in home view
+        blogList.innerHTML = `
+            <article class="blog-card">
+                <div class="card-body">
+                    <span class="card-tag">Ny</span>
+                    <h2 class="card-title">${post.title}</h2>
+                    <p class="card-excerpt">${excerpt}</p>
+                </div>
+                <div class="card-footer">
+                    <button class="read-more-btn">Læs mere &rarr;</button>
+                </div>
+            </article>`;
+
+        // Render full post in post view
+        fullPostContent.innerHTML = `
+            <h2>${post.title}</h2>
+            <time class="post-date">${date}</time>
+            ${post.content}`;
+
+        // Attach Read More click handler
+        const btnReadMore = blogList.querySelector('.read-more-btn');
+        btnReadMore.addEventListener('click', () => {
+            goToPost();
+        });
+    } catch (err) {
+        console.error('Error loading latest post:', err);
+    }
 }
+
+loadLatestPost();
 
 // --- Helper Function: Find URL'er (Regex) ---
 function extractUrls(text) {
