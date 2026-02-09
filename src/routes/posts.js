@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const Post = require('../models/Post');
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/posts/latest - Return the most recent post
+// Must be defined before /:id to avoid being caught by the param route
 router.get('/latest', async (req, res) => {
     try {
         const post = await Post.findOne().sort({ createdAt: -1 });
@@ -23,6 +25,25 @@ router.get('/latest', async (req, res) => {
         res.json(post);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch latest post.' });
+    }
+});
+
+// GET /api/posts/:id - Return a single post by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid post ID.' });
+        }
+
+        const post = await Post.findById(id);
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found.' });
+        }
+        res.json(post);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch post.' });
     }
 });
 

@@ -21,14 +21,14 @@ This is a Danish-language blog app with comment URL validation, built as an Expr
 
 **Route modules** (`src/routes/`):
 - `api.js` — `POST /api/validate-urls`: delegates to the validator module.
-- `posts.js` — `GET /api/posts`, `GET /api/posts/latest`, `POST /api/posts`: blog post CRUD using the Post model.
+- `posts.js` — `GET /api/posts`, `GET /api/posts/latest`, `GET /api/posts/:id`, `POST /api/posts`: blog post CRUD using the Post model.
 - `comments.js` — `POST /api/comments`, `GET /api/comments/:postId`: comments with URL safety checking, ObjectId validation, and post-existence validation (404 if post not found). Uses the Comment and Post models.
 
-**Frontend** (`public/`): Single-page app with client-side view switching (no router library). Two views are toggled via `display: none/block`:
-- `view-home`: Blog post list
-- `view-post`: Full post with comment form
+**Frontend** (`public/`): Single-page app with History API-based client-side router (no framework). Two views toggled via `display: none/block`:
+- `view-home` (`/`): Blog post list
+- `view-post` (`/posts/:id`): Full post with comments and comment form
 
-**`public/client.js`**: Handles SPA navigation, comment form submission, URL extraction from comment text via regex (`extractUrls`), and calls `POST /api/validate-urls` to check found URLs. Displays green/red feedback based on results.
+**`public/client.js`**: Implements a custom SPA router using `pushState`/`popstate` with route definitions (`/` and `/posts/:id`). Global click delegation intercepts internal `<a>` tags. Handles comment form submission with `postId` from the current route, URL extraction via regex (`extractUrls`), and client-side URL safety checking via `POST /api/validate-urls`. A server-side catch-all route in `main.js` serves `index.html` for all non-API paths to support direct URL access and page refresh.
 
 **`src/urlvalidator.js`**: Mock URL validator with a hardcoded domain blacklist and random safe/unsafe simulation for non-blacklisted URLs. Exports `validateUrls(urls)` returning `{ url, safe, reason }` per URL. Hostname matching is case-insensitive.
 

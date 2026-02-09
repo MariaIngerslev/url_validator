@@ -53,15 +53,15 @@ async function seedPosts() {
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.json());
 
-// Basic route for the home page (fallback)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public', 'index.html'));
-});
-
 // Mount API routes
 app.use('/api', apiRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/comments', commentsRoutes);
+
+// SPA catch-all: serve index.html for any non-API route
+app.get('/{*path}', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public', 'index.html'));
+});
 
 // --- Connect to MongoDB, then start the server ---
 const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
